@@ -15,6 +15,8 @@
 % on the last page of the document
 
 % numbers option provides compact numerical references in the text. 
+
+\usepackage[hidelinks, bookmarks=true]{hyperref}
 \usepackage[font=small,labelfont=bf]{caption}
 
 % The following packages can be found on http:\\www.ctan.org
@@ -31,6 +33,7 @@
 \usepackage{cite}
 \usepackage{color}
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage[inline,shortlabels]{enumitem}
 
 %% Define symbols and special formats for texts
 \DeclareMathOperator{\F}{\rotatebox[origin=c]{45}{$\Box$}}
@@ -59,7 +62,9 @@
 \input{intro}
 \input{highlevel}
 \input{sensing}
-%\bibliographystyle{plain}
-%\bibliography{ref}
+\input{pathPlanning}
+
+\bibliographystyle{plain}
+\bibliography{ref}
 
 \end{document}
