@@ -14,21 +14,7 @@
 % See the \addtolength command later in the file to balance the column lengths
 % on the last page of the document
 
-% The following packages can be found on http:\\www.ctan.org
-%\usepackage{graphics} % for pdf, bitmapped graphics files
-%\usepackage{epsfig} % for postscript graphics files
-%\usepackage{mathptmx} % assumes new font selection scheme installed
-%\usepackage{times} % assumes new font selection scheme installed
-%\usepackage{amsmath} % assumes amsmath package installed
-%\usepackage{amssymb}  % assumes amsmath package installed
-
 % numbers option provides compact numerical references in the text. 
-
-\usepackage{multicol}
-\usepackage[hidelinks, bookmarks=true]{hyperref}
-%\usepackage[numbers]{natbib}
-
-
 \usepackage[font=small,labelfont=bf]{caption}
 
 % The following packages can be found on http:\\www.ctan.org
@@ -46,14 +32,6 @@
 \usepackage{color}
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 
-%% for flowchart
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows}
-\usetikzlibrary{positioning}
-\usetikzlibrary{intersections}
-\usepackage{tkz-euclide}
-\usetkzobj{all}
-
 %% Define symbols and special formats for texts
 \DeclareMathOperator{\F}{\rotatebox[origin=c]{45}{$\Box$}}
 \DeclareMathOperator{\G}{\Box}
@@ -63,34 +41,11 @@
 \newcommand{\FALSE}{\mathbf{false}}
 \newcommand{\TRUE}{\mathbf{true}}
 
-\newcommand{\algorithmicbreak}{\textbf{break}}
-
-\newtheorem{theorem}{Theorem}
-\newtheorem{example}{Example}
-\newtheorem{define}{\textbf{Definition}}[section]
-
-\newtheorem{problem}{\textbf{Problem}}
-
-\newcommand{\todo}[1]{\textcolor{blue}{\emph{\bf#1}}}
-
-\newfloat{spec}{thb}{lop} %{thb}{lop}
-\floatname{spec}{Specification}
-
-\newcommand{\changed}[1]{{\color{black}{#1}}}
-
-\addtolength{\topmargin}{5pt}
-
-%\title{\LARGE \bf High-level Robot Control: Negotiate to Achieve Our Goals Together}
 \title{\LARGE \bf CS 6751 Intro to Mobile Robot Manipulation Project Proposal}
 
 
-\author{Scott Hamill, Jim Jing, Catherine Wong% <-this % stops a space
+\author{Scott Hamill, Gangyuan Jing, Kai Weng Wong% <-this % stops a space
 }
-
-%\usepackage{fullpage}
-%\usepackage[margin=1in]{geometry}
-\usepackage[top=0.3in, bottom=0.5in, left=1in, right=1in]{geometry}
-
 
 
 \begin{document}
@@ -101,8 +56,9 @@
 \pagestyle{empty}
 
 % add our sections here
-%\input{main}
-
+\input{intro}
+\input{highlevel}
+\input{sensing}
 %\bibliographystyle{plain}
 %\bibliography{ref}
 
