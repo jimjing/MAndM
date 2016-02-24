@@ -1,4 +1,4 @@
-\section{Path Planning (Catherine)}
+\section{Trajectory Planning (Catherine)}
 
 This component is divided into two subsections:
 \begin{enumerate*}[label=\thesection.\arabic*]
@@ -6,7 +6,7 @@ This component is divided into two subsections:
 \item Trajectory Executor for robot arm trajectory execution.
 \end{enumerate*}
 
-\subsection{Trajectory Planning}
+\subsection{Trajectory Planner}
 
 During execution, the task planner requests the path planner to create trajectory plans for one or more robot arms. The planner aims to find a plan that (i) each arm starts at its initial configuration, and (ii) each arm ends with each robot end effector within a certain radius from the final desired workspace position. If the planner finds a plan, it returns the joint-space trajectory for each arm. If the planning exceeds the time limit, then the planner aborts and returns no trajectories. 
 
@@ -39,4 +39,4 @@ During the planning phrase, we plan to optimize the final trajectory by reducing
 \subsection{Trajectory Executor}
 
 Besides a trajectory planner, the person in charge of this component also creates a trajectory executor that executes any given trajectory.
-Once the task planner receives a plan, it can invoke the trajectory executor to execute the path. The executor takes in a joint-space trajectory and notifies the task planner when it finishes the execution. The task planner then invokes proximity planning by the lowest-level controller in the next section to conduct fine and accurate grasping of objects.
+Once the task planner receives a plan, it can invoke the trajectory executor to execute the path. The executor takes in a joint-space trajectory and notifies the task planner when it finishes the execution. The task planner then invokes planning by the action planner in the next section to conduct fine and accurate objects manipulation.
