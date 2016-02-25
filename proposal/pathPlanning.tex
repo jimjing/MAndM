@@ -6,7 +6,7 @@ This component is divided into two subsections:
 \item Trajectory Executor for robot arm trajectory execution.
 \end{enumerate*}
 
-\subsection{Trajectory Planning}
+\subsection{Trajectory Planner}
 
 During execution, the task planner requests the path planner to create trajectory plans for one or more robot arms. The planner aims to find a plan that (i) each arm starts at its initial configuration, and (ii) each arm ends with each robot end effector within a certain radius from the final desired workspace position. If the planner finds a plan, it returns the joint-space trajectory for each arm. If the planning exceeds the time limit, then the planner aborts and returns no trajectories. 
 

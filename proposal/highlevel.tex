@@ -13,9 +13,23 @@ The framework in (\TODO{hadas paper}) allows reactive robot task, such as "if th
 However, the task specification only issues commands for a single robot.
 In order to specify reactive tasks for a team of robots, we need to extend the specification language to able to express  multi-robot tasks.
 
-\subsection{Distribute Tasks}
+\subsection{Tasks Allocation}
 The framework employed in this work will generate a centralized controller for a team of robot.
 We will then distribute tasks to each robots in a synchronized process.
-One method is to assign tasks to each robot in the task specification and thus the synthesized controller will have
-\subsection{Feedback from Trajectory Planner}
+One method is to handle task allocation in the high-level specification.
+Therefore, task distribution for each robot will be encoded in the synthesized controller.
+The drawback for this method is that, whenever a new task allocation is required,
+possibly due to failing to find a feasible trajectory, the entire discrete controller needs to be resynthesized.
+Another method for task allocation is to treat all robots as one virtual robot with multiple redundant action abilities.
+The specification will only describe tasks for this virtual robot,
+and the task allocation will be determined when executing the synthesized controller.
+The disadvantage of this method is that the algorithm will spend more time during execution for computing the task allocation plan.
+Both method will be implemented in this work.
+We will compare the performance of both methods and choose the better one.
 
+\subsection{Feedback from Trajectory Planner}
+Once task are allocated to each robot, the task planner will invoke the trajectory planner to move each robot arm to desired location without collision.
+In the situation where the trajectory planner fails to find a feasible path for an arm,
+it will provide feedback to the task planner about such failure.
+The task planner will then incorporate the information into the task specification and come up with a new discrete plan.
+If no plan can be created, the task planner will notify the user the possible cause of failure, e.g. the robot arm cannot reach the desire position. 
