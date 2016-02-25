@@ -1,15 +1,15 @@
-\section{Task Planning}
-The task planner in this work is based on the framework introduced in (\TODO{hadas paper}).
+\section{Task Planning (Jim)}
+The task planner in this work is based on the framework introduced in \cite{HKG2009}.
 A reactive robot task specification is expressed in LTL formulas.
 Then the specification is automatically transformed to a correct-by-construction discrete controller.
 At last, the controller is continuously implemented to generate desired robot behaviors.
-Different from (\TODO{hadas paper}), in this work we aim to synthesize controllers for multiple robots executing a manipulation task.
+Different from \cite{HKG2009}, in this work we aim to synthesize controllers for multiple robots executing a manipulation task.
 Therefore, there are three main challenges in this work for task planning, as described in the following sections.
 
 \subsection{Specification Language for Multi-robot}
-In (\TODO{cite regex paper, new calin paper}), the author introduces an approach for specifying robot tasks in formal language and generating controllers for a team of robots. 
+In \cite{ChenDSB12,Diaz-MercadoJBE15}, the author introduces an approach for specifying robot tasks in formal language and generating controllers for a team of robots. 
 However, the type of robot tasks is limited to non-reactive, i.e. the environment is assume static and the robot behavior does not depends on the environment state.
-The framework in (\TODO{hadas paper}) allows reactive robot task, such as "if the robot sense a soda can, bring the can to the kitchen".
+The framework in \cite{HKG2009} allows reactive robot task, such as "if the robot sense a soda can, bring the can to the kitchen".
 However, the task specification only issues commands for a single robot.
 In order to specify reactive tasks for a team of robots, we need to extend the specification language to able to express  multi-robot tasks.
 

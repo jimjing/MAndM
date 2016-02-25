@@ -1,11 +1,11 @@
 \section{Introduction and Background}
 With the development of hardware and software of robots,
 there is an increasing interest in combining high-level task planning,
-with low-level motion planning when creating robot controllers (\TODO{cite}).
+with low-level motion planning when creating robot controllers \cite{HKG2009,Belta2008,Bhatia2011,Dornhege2009,Erdem2011,Tom2014,Srivastava2014}.
 While integrating tasking and motion planning enables users to specify complex robot tasks from a high-level perspective,
 combining discrete task reasoning with continuous motion planning brings challenges to designing robot controllers.
 
-Many research show promising results on controller synthesis with formal methods (\TODO{cite}).
+Many research show promising results on controller synthesis with formal methods \cite{HKG2009,Belta2008,Bhatia2011,Wongpiromsarn,Maly,Vasile}.
 In these papers, robot tasks are expressed in formal language such as Linear Temporal Logic (LTL).
 Controllers can be automatically synthesized from the task specification,
 while providing guarantees on the correctness of robot behaviors.
@@ -15,13 +15,13 @@ While the abstraction reduces the complexity of mobile systems,
 the discretization is usually intractable for manipulation systems,
 due to high degrees of freedom of manipulation tasks.
 
-Many frameworks were developed on controller synthesis with formal methods for manipulation (\TODO{cite}).
-Most of these works utilize AI based planners for high-level task planning and low-level motion planners for finding feasible robot trajectories (\TODO{cite}).
+Many frameworks were developed on controller synthesis with formal methods for manipulation \cite{Dornhege2009,Erdem2011,Tom2014,Srivastava2014,CambonAG09,KaelblingL11,PlakuH10,HeLKV15}.
+Most of these works utilize AI based planners for high-level task planning and low-level motion planners for finding feasible robot trajectories \cite{Nau,Hoffmann01}.
 These frameworks allows user to control manipulation systems with high-level task specifications.
 However, high-level planners used in these frameworks limit possible tasks to non-reactive,
 i.e. the behavior of the robot does not depend on the state of the environment.
 
-Moreover, formal methods are also used in robotics to generate controllers for coordination of a team of robots (\TODO{cite}).
+Moreover, formal methods are also used in robotics to generate controllers for coordination of a team of robots \cite{ChenDSB12,KaramanF08,GuoTD14,VasileB14}.
 In these work, tasks are specified in Temporal Logic and controllers are automatically synthesized and distributed to each robot agent. 
 However, little work has been done on task and motion planning for multi-agent manipulation system with formal method.
 
