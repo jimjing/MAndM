@@ -1,4 +1,4 @@
-\section{Action Planning and Verification}
+\section{Action Planning and Verification (Scott)}
 
 The action planning stage of the assembly process is broken down into two parts: modeling the manipulator behavior as a hybrid system and verifying safety conditions of the end effector motions (making sure that undesirable motions do not occur).
 
@@ -6,17 +6,17 @@ The action planning stage of the assembly process is broken down into two parts:
 The trajectory planner discussed in the previous section is responsible for moving each arm (trajectory execution) to within some bound of the final desired end effector position (determined by the task planner) for either (i) grasping or (ii) component alignment. 
 The trajectory planner provides to the action planner the final positions of the end effectors with respect to the appropriate blocks for (i) grasping, or (ii) alignment at attachment.
 In either case, it is beneficial to avoid damaging a robot module or failing to complete a grasp or attachment due to position and alignment errors.
-For the proposed scenario of assembling modular robotic components, we implement a system similar to a framework developed to address the verification of control architectures for autonomous robotic surgery manipulation tasks with respect to various safety conditions, denoted as $\varphi$, such as avoiding end effector misalignment or excessive force application \cite{6016596}.
+For the proposed scenario of assembling modular robotic components, we implement a system similar to a framework \cite{6016596} developed to address the verification of control architectures for autonomous robotic surgery manipulation tasks with respect to various safety conditions, denoted as $\varphi$, such as avoiding end effector misalignment or excessive force application.
 
-In the previously mentioned framework, the system is modeled as a hybrid automaton \cite{Alur1993}, composed of discrete states (tasks/behaviors) and the controllers and continuous dynamics associated with each state or behavior.
-In our case of modular robot assembly, the states are \textit{fast approach}, which is handled by the trajectory planner, and \textit{slow approach}, \textit{alignment}, \textit{grasping}, and \textit{connecting}, handled by the action planner. 
-Each state contains a controller, a set of invariants (conditions required to be true while the automaton is in that state), and a set of guards (conditions that must be true in order for a state transition to take place).
+In the previously mentioned framework, the system is modeled as a hybrid automaton \cite{Alur1993}, composed of discrete states (tasks/behaviors) and continuous dynamics associated with each state or behavior.
+In our case of modular robot assembly, each state consists of \textit{fast approach}, which is handled by the trajectory planner, and \textit{slow approach}, \textit{alignment}, \textit{grasping}, and \textit{connecting}, handled by the action planner. 
+Each state also contains a controller, a set of invariants (conditions required to be true while the automaton is in that state), and a set of guards (conditions that must be true in order for a state transition to take place).
 
 \subsection{Verification of Behaviors}
-In order to verify that the safety conditions are satisfied for the discrete state controllers, the reachable set of the system, which is the stet of all reachable states from some initial condition, $X_0$, can be compared to the set of states for which the safety properties are not satisfied.
+In order to verify that the safety conditions $\varphi$ are satisfied for the discrete state controllers, the reachable set of the system $\textit{ReachSet}_{\mbox{\textit{H}}}$, which is the set of all reachable states from some initial condition, $X_0$, can be compared to the set of states for which the safety properties are not satisfied, $\neg \mbox{Sat}(\varphi)$.
 However, computing the exact set of reachable states is difficult \cite{Henzinger:1995:WDH:225058.225162} and approximations may be used instead.
-In this case, a reachability tool (e.g. \textit{SpaceEx}), which computes approximate reachable sets given the system dynamics and controllers, can be used to over-approximate the reachable set of the hybrid system such that $\mbox{\textit{ReachSet}}_{\mbox{\textit{H}}} \supseteq \mbox{Sat}(\phi)$.
-If $\mbox{\textit{ReachSet}}_{\mbox{\textit{H}}}$ does not intersect with the set of states for which $\varphi$ is not satisfied, the safety of the system is verified.
+In this case, a reachability tool (e.g. \textit{SpaceEx}~\cite{rehseGDCRLRGDM11}), which computes approximate reachable sets given the system dynamics and controllers, can be used to over-approximate the reachable set of the hybrid system $\textit{ReachSet}_{\mbox{\textit{H}}}$ such that $\mbox{\textit{ReachSet}}_{\mbox{\textit{H}}} \supseteq \mbox{Sat}(\varphi)$, where $\mbox{Sat}(\varphi)$ is the set of states that satisfies $\varphi$.
+If $\mbox{\textit{ReachSet}}_{\mbox{\textit{H}}}$ does not intersect with the set of states for which the safety conditions $\varphi$ is not satisfied, $\mbox{\textit{ReachSet}}_{\mbox{\textit{H}}} \cap \neg \mbox{Sat}(\varphi) = \emptyset$, the safety of the system is verified.
 
 In the case that $\mbox{\textit{ReachSet}}_{\mbox{\textit{H}}} \cap \neg \mbox{Sat}(\varphi) \neq \emptyset$, the inconclusive nature of the system is communicated to the trajectory planner and the system will either (i) re-plan the arm motions or (ii) adjust the boundaries specified in the safety conditions, $\varphi$ and recompute the system reachability.
 
