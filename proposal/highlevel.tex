@@ -8,13 +8,13 @@ Therefore, there are three main challenges in this work for task planning, as de
 
 \subsection{Specification Language for Multi-robot}
 In \cite{ChenDSB12,Diaz-MercadoJBE15}, the author introduces an approach for specifying robot tasks in formal language and generating controllers for a team of robots. 
-However, the type of robot tasks is limited to non-reactive, i.e. the environment is assume static and the robot behavior does not depends on the environment state.
+However, the type of robot tasks is limited to non-reactive, i.e. the environment is assume static and the robot behavior does not depend on the environment state.
 The framework in \cite{HKG2009} allows reactive robot task, such as "if the robot sense a soda can, bring the can to the kitchen".
 However, the task specification only issues commands for a single robot.
 In order to specify reactive tasks for a team of robots, we need to extend the specification language to able to express  multi-robot tasks.
 
 \subsection{Tasks Allocation}
-The framework employed in this work will generate a centralized controller for a team of robot.
+The framework employed in this work will generate a centralized controller for a team of robots.
 We will then distribute tasks to each robots in a synchronized process.
 One method is to handle task allocation in the high-level specification.
 Therefore, task distribution for each robot will be encoded in the synthesized controller.

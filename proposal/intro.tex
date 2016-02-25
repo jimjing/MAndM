@@ -5,7 +5,7 @@ with low-level motion planning when creating robot controllers \cite{HKG2009,Bel
 While integrating tasking and motion planning enables users to specify complex robot tasks from a high-level perspective,
 combining discrete task reasoning with continuous motion planning brings challenges to designing robot controllers.
 
-Many research show promising results on controller synthesis with formal methods \cite{HKG2009,Belta2008,Bhatia2011,Wongpiromsarn,Maly,Vasile}.
+Past research has shown promising results on controller synthesis with formal methods \cite{HKG2009,Belta2008,Bhatia2011,Wongpiromsarn,Maly,Vasile}.
 In these papers, robot tasks are expressed in formal language such as Linear Temporal Logic (LTL).
 Controllers can be automatically synthesized from the task specification,
 while providing guarantees on the correctness of robot behaviors.
@@ -29,6 +29,6 @@ In this work, we are interested in developing a framework for automatically synt
 for multi-agent manipulation tasks expressed in Linear Temporal Logic. The framework consists of three main components:
 a high-level {\it task planner} for generating and distributing controllers to each agent,
 a {\it trajectory planner} for finding feasible path and moving each manipulator while avoiding collisions,
-and and {\it action planner} for creating precious motion and actuation for each manipulator.
+and and {\it action planner} for creating precise motion and actuation for each manipulator.
 The framework will be demonstrated with an experiment of two physical Baxter robots assembling a set of modular robots. 
 
