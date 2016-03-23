@@ -1,0 +1,36 @@
+Hi everyone, I have ported the logging module from LTLMoP to here so it's easier to test.
+
+To use the logger, put the following code in the .py file you would like to use logging (This imports the things needed):
+
+"""
+import os, sys
+# Climb the tree to find out where we are
+p = os.path.abspath(__file__)
+t = ""
+while t != "code":
+    (p, t) = os.path.split(p)
+    if p == "":
+        print "I have no idea where I am; this is ridiculous"
+        sys.exit(1)
+
+sys.path.append(os.path.join(p,"code"))
+
+import globalConfig
+import logging
+mAndm_logger = logging.getLogger('mAndm_logger')
+"""
+
+Now to use it, you can do:
+
+"""
+mAndm_logger.log(2,"Sth you want to see")
+mAndm_logger.log(4,"Sth you want to see")
+mAndm_logger.log(6,"Sth you want to see")
+mAndm_logger.log(8,"Sth you want to see")
+mAndm_logger.debug("Sth you want to see")
+mAndm_logger.info("Sth you want to see")
+mAndm_logger.warning("Sth you want to see")
+mAndm_logger.error("Sth you want to see")
+"""
+
+They are all in different colors!
