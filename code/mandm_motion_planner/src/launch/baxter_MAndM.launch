@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- #####need to launch gazebo separately #######-->
+
+  <!-- enable robot and start trajectory server -->
+  <node name="node_enable_robot" pkg="baxter_tools" type="enable_robot.py" args="-e"/>
+  <node name="node_start_traj_server" pkg="baxter_interface" type="joint_trajectory_action_server.py"/>
+
+  <!-- remap /robot/joint_states to /joint_states (before designated nodes, groups and launch files) doesn't work?!-->
+  <node name="node_remap_joint_states" pkg="baxter_moveit_config" type="remap_joint_states.py" args="-e"/>
+  <!--<remap from="/robot/joint_states" to="/joint_states"/>-->
+
+  <!-- launch the default launch file to set up movit and rviz, with rviz_config modified -->
+  <arg name="rviz_config" default="$(find mandm_motion_planner)/src/rviz_configs/mandm_default.rviz"/>
+
+  <!-- for setting up kinect from torso -->
+  <!-- octamap simply comes from Jim's kinect -->
+  <!-- <arg name="camera_link_pose" default="0.15 0.075 0.5 0.0 0.7854 0.0"/> -->
+  <!-- <arg name="kinect" default="true" /> -->
+
+  <include file="$(find baxter_moveit_config)/launch/baxter_grippers.launch">
+    <arg name="rviz_config" value="$(arg rviz_config)"/>
+    <!--<arg name="camera_link_pose" value="$(arg camera_link_pose)"/> -->
+    <!-- <arg name="kinect" value="$(arg kinect)"/> -->
+  </include>
+
+  <!-- octomap parameters for moveit -->
+  <!-- <group ns="move_group" > -->
+  <!-- <param name="octomap_frame" type="string" value="camera_link" /> -->
+  <!-- <param name="octomap_resolution" type="double" value="0.02" /> -->
+   <rosparam command="load" file="$(find baxter_moveit_config)/config/kinect_sensor.yaml" />
+  <!--</group> -->
+
+</launch>

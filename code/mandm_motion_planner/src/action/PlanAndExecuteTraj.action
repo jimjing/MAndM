@@ -1,0 +1,24 @@
+# Define the goal
+string tag_name                 # Specify which tag we are planning to
+geometry_msgs/Pose target_pose  # (Optional) Specify target pose to go to
+string arm                      # 'left_arm', 'right_arm' or 'both_arms'
+string action_type              # ‘pickup’ or ‘drop’
+string planning_mode            # 'rough', 'fine' or 'rough_and_fine'
+bool rotate_ninety              # rotate axis 90 degrees if true
+
+---
+# Define the result
+bool rough_execution_result # true if rough_traj is executed. false if no traj is found/execution failed
+bool fine_execution_result # true if fine_traj is executed. false if no traj is found/execution failed
+bool rough_planning_result  # true if rough planning succeeded. false otherwise
+bool fine_planning_result  # true if fine planning succeeded. false otherwise
+bool grasp_result     # true if grasp succeeded. false otherwise
+int32 error_type  #1-no tag_name and target_pose provided. 2-cannot locate tag in rough mode. 3-in fine mode
+
+---
+# Define a feedback message
+bool rough_plan_found      # true if rough plan is found. false otherwise
+bool fine_plan_found      # true if fine plan is found. false otherwise
+bool executing_rough_plan  # true if rough execution has started. false otherwise
+bool executing_fine_plan  # true if fine execution has started. false otherwise
+bool executing_grasp # true if grasp has started. false otherwise
