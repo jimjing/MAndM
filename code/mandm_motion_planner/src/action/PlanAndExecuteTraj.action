@@ -2,7 +2,7 @@
 string tag_name                 # Specify which tag we are planning to
 geometry_msgs/Pose target_pose  # (Optional) Specify target pose to go to
 string arm                      # 'left_arm', 'right_arm' or 'both_arms'
-string action_type              # ‘pickup’ or ‘drop’
+string action_type              # ‘move_to’, ‘open_gripper’, 'close_gripper' or 'move_to_camera_pos'
 string planning_mode            # 'rough', 'fine' or 'rough_and_fine'
 bool rotate_ninety              # rotate axis 90 degrees if true
 
@@ -14,7 +14,7 @@ bool rough_planning_result  # true if rough planning succeeded. false otherwise
 bool fine_planning_result  # true if fine planning succeeded. false otherwise
 bool grasp_result     # true if grasp succeeded. false otherwise
 int32 error_type  #1-no tag_name and target_pose provided. 2-cannot locate tag in rough mode. 3-in fine mode
-
+geometry_msgs/Pose tag_pose # return fine pose if available, otherwise rought pose
 ---
 # Define a feedback message
 bool rough_plan_found      # true if rough plan is found. false otherwise
