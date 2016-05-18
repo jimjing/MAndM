@@ -22,3 +22,4 @@ bool fine_plan_found      # true if fine plan is found. false otherwise
 bool executing_rough_plan  # true if rough execution has started. false otherwise
 bool executing_fine_plan  # true if fine execution has started. false otherwise
 bool executing_grasp # true if grasp has started. false otherwise
+string arm                  # 'left_arm', 'right_arm' or 'both_arms'
