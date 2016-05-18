@@ -30,7 +30,7 @@ from geometry_msgs.msg import (
     Quaternion,
 )
 
-from test_package.msg import verified_motionAction, verified_motionFeedback, verified_motionResult
+from verified_torque_controller.msg import verified_motionAction, verified_motionFeedback, verified_motionResult
 
 
 class verifiedMotionServer:
@@ -120,11 +120,11 @@ class verifiedMotionServer:
         # Compute flowstar file - verify the controller
         print("Computing Flow* file, verifying the motion ...")
         self._update_parameters(goal.arm)
-        timeEnd = matlab.double([self._sim_time])
-        springMod = matlab.double([self._spring_modifier])
-        dampingMod = matlab.double([self._damping_modifier])
-        maxMinValues = self.eng.generate_flowstar_file(self._start_angles,self._goal_angles,self._springs,self._damping,timeEnd,springMod, dampingMod)
-        print(maxMinValues)
+        #timeEnd = matlab.double([self._sim_time])
+        #springMod = matlab.double([self._spring_modifier])
+        #dampingMod = matlab.double([self._damping_modifier])
+        #maxMinValues = self.eng.generate_flowstar_file(self._start_angles,self._goal_angles,self._springs,self._damping,timeEnd,springMod, dampingMod)
+        #print(maxMinValues)
         print("... verified.")
         
         # set control rate
