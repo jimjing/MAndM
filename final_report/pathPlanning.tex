@@ -1,0 +1,45 @@
+\section{Trajectory Planning (Catherine)}
+
+This component is divided into two subsections:
+\begin{enumerate}%[label=\thesection.\arabic*]
+\item Trajectory Planner for robot arm trajectory planning, and
+\item Trajectory Executor for robot arm trajectory execution.
+\end{enumerate}
+
+\subsection{Trajectory Planner}
+
+During execution, the task planner requests the path planner to create trajectory plans for one or more robot arms. The planner aims to find a plan that (i) each arm starts at its initial configuration, and (ii) each arm ends with each robot end effector within a certain radius from the final desired workspace position. If the planner finds a plan, it returns the joint-space trajectory for each arm. If the planning exceeds the time limit, then the planner aborts and returns no trajectories. 
+
+There are a variety of path planning algorithms developed in the community~\cite{DBLP:books/daglib/0016830} and some algorithms are adapted for finding robot arm trajectories. 
+Researchers have proposed sampling-based approaches with probabilistic completeness such as the Rapidly-Exploring Random Tree (RRT) algorithm ~\cite{VahrenkampBAKD09} to find trajectories for robot arms. Others have used Probabilistic RoadMaps (PRM) that work with high-dimensional spaces~\cite{KavrakiSLO96} but the algorithm requires pre-computation of the roadmap and no dynamic obstacles in the environment. In this project, we will not conduct pre-processing and the other arms can become obstacles so we are using RRT to find trajectories for the robot arms.
+
+First, we plan to try two different RRT approaches and compare their performance. With RRT, there are still multiple ways to generate a trajectory plan.
+One of them is to generate trajectory plan synchronously.
+For example, if there are four arms available for a task, or two Baxters, then the planning could be synchronous, i.e, we plan all the arms at the same time and each node in RRT stores the joint information of the four arms. With each arm having 7 degrees of freedom (DoF), a synchronous planning has up to 28 degrees of freedom.
+With this approach, assuming the workspace has no other obstacles, collision avoidance with the other arms is taken care of during the planning phase so it is unnecessary during trajectory execution.  
+The trade off of synchronous planning is that one arm may wait for the others even though its trajectory is found.
+
+Alternatively, another way would be to first create a plan each arm separately and assign priorities to each arm. An arm then replans only when its trajectory intersects with the plan of another arm with a higher priority. Compared with the synchronous approach, each planning contains 7 degrees of freedom but re-plannings of trajectory can go up to (n-1) times, with n being the number of arms. 
+
+Second, we plan to create our own version of RRT planner and also utilize off-the-shelf library with RRT such as the Open Motion Planning library (OMPL)~\cite{sucan2012the-open-motion-planning-library} to find out the one with better performance.
+Compared with creating our own RRT planner, OMPL has lots of planning algorithms available, but most examples of OMPL work with single robot or arm and planning for multiple arms simultaneously with OMPL may be unfeasible. We plan to learn more about OMPL and then decide if we are creating our own RRT planner or we are using OMPL to build our planner.
+
+Finally, RRT is only a template for planning and we need to complete the template with ways to propagate a trajectory and smoothen the resulting trajectory. 
+During the planning phrase, we plan to optimize the final trajectory by reducing the difference in joint angles between two nodes in the RRT tree. We use inverse kinematics find robot joint angles given a desired location of the end effector.
+
+
+%To conduct a path planning of the robot arms, the planner takes in:
+
+%\begin{itemize}
+%\item the number of arms we are planning, 
+%\item the starting joint configurations of each arm, and
+%\item the final workspace positions of robot end effectors.
+%\end{itemize}
+
+two-step planning
+
+
+\subsection{Trajectory Executor}
+
+Besides a trajectory planner, the person in charge of this component also creates a trajectory executor that executes any given trajectory.
+Once the task planner receives a plan, it can invoke the trajectory executor to execute the path. The executor takes in a joint-space trajectory and notifies the task planner when it finishes the execution. The task planner then invokes planning by the action planner in the next section to conduct fine and accurate objects manipulation.

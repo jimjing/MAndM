@@ -1,0 +1,76 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+%\documentclass[letterpaper, 10 pt,noend]{article}  % Comment this line out if you need a4paper
+
+\documentclass[letterpaper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
+
+%\IEEEoverridecommandlockouts                              % This command is only needed if 
+                                                          % you want to use the \thanks command
+
+%\overrideIEEEmargins                                      % Needed to meet printer requirements.
+
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+% numbers option provides compact numerical references in the text. 
+
+\usepackage{float}
+\usepackage[hidelinks, bookmarks=true]{hyperref}
+\usepackage[font=small,labelfont=bf]{caption}
+
+% The following packages can be found on http:\\www.ctan.org
+\usepackage{graphics} % for pdf, bitmapped graphics files
+\usepackage{epsfig} % for postscript graphics files
+\usepackage{amsmath} % assumes amsmath package installed
+\usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{listings}
+\usepackage{graphicx,float,wrapfig}
+\usepackage{subfig}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{mathtools}
+\usepackage{cite}
+\usepackage{color}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+%\usepackage[inline,shortlabels]{enumitem}
+
+%% Define symbols and special formats for texts
+\DeclareMathOperator{\F}{\rotatebox[origin=c]{45}{$\Box$}}
+\DeclareMathOperator{\G}{\Box}
+\DeclareMathOperator{\X}{\bigcirc}
+\DeclareMathOperator{\Cox}{\scalebox{0.8}{$\F$}\hspace{-9.3pt}\bigcirc}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\FALSE}{\mathbf{false}}
+\newcommand{\TRUE}{\mathbf{true}}
+\newcommand{\TODO}[1]{{\color{red}#1}}
+
+\title{\LARGE \bf CS 6751 Intro to Mobile Robot Manipulation Project Final Report}
+
+
+\author{Scott Hamill, Gangyuan Jing, Kai Weng Wong% <-this % stops a space
+}
+
+
+\begin{document}
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+% add our sections here
+\input{intro}
+\input{preliminaries}
+\input{problem_formulation}
+\input{overview}
+\input{highlevel}
+\input{pathPlanning}
+\input{actionPlanner}
+\input{experiment}
+
+\bibliographystyle{plain}
+\bibliography{ref}
+
+\end{document}

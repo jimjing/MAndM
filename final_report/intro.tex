@@ -1,0 +1,34 @@
+\section{Introduction and Background}
+With the development of hardware and software of robots,
+there is an increasing interest in combining high-level task planning,
+with low-level motion planning when creating robot controllers \cite{HKG2009,Belta2008,Bhatia2011,Dornhege2009,Erdem2011,Tom2014,Srivastava2014}.
+While integrating tasking and motion planning enables users to specify complex robot tasks from a high-level perspective,
+combining discrete task reasoning with continuous motion planning brings challenges to designing robot controllers.
+
+Past research has shown promising results on controller synthesis with formal methods \cite{HKG2009,Belta2008,Bhatia2011,Wongpiromsarn,Maly,Vasile}.
+In these papers, robot tasks are expressed in formal language such as Linear Temporal Logic (LTL).
+Controllers can be automatically synthesized from the task specification,
+while providing guarantees on the correctness of robot behaviors.
+These controller synthesis algorithms typically abstract robot systems and environment by discretizing the robot workspace,
+in order to avoid the combinatorial blow up of the state space.
+While the abstraction reduces the complexity of mobile systems,
+the discretization is usually intractable for manipulation systems,
+due to high degrees of freedom of manipulation tasks.
+
+Many frameworks were developed on controller synthesis with formal methods for manipulation \cite{Dornhege2009,Erdem2011,Tom2014,Srivastava2014,CambonAG09,KaelblingL11,PlakuH10,HeLKV15}.
+Most of these works utilize AI based planners for high-level task planning and low-level motion planners for finding feasible robot trajectories \cite{Nau,Hoffmann01}.
+These frameworks allows user to control manipulation systems with high-level task specifications.
+However, high-level planners used in these frameworks limit possible tasks to non-reactive,
+i.e. the behavior of the robot does not depend on the state of the environment.
+
+Moreover, formal methods are also used in robotics to generate controllers for coordination of a team of robots \cite{ChenDSB12,KaramanF08,GuoTD14,VasileB14}.
+In these work, tasks are specified in Temporal Logic and controllers are automatically synthesized and distributed to each robot agent. 
+However, little work has been done on task and motion planning for multi-agent manipulation system with formal method.
+
+In this work, we are interested in developing a framework for automatically synthesizing correct-by-construction controllers
+for multi-agent manipulation tasks expressed in Linear Temporal Logic. The framework consists of three main components:
+a high-level {\it task planner} for generating and distributing controllers to each agent,
+a {\it trajectory planner} for finding feasible path and moving each manipulator while avoiding collisions,
+and and {\it action planner} for creating precise motion and actuation for each manipulator.
+The framework will be demonstrated with an experiment of two physical Baxter robots assembling a set of modular robots. 
+

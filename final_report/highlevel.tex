@@ -1,0 +1,35 @@
+\section{Task Planning (Jim)}
+The task planner in this work is based on the framework introduced in \cite{HKG2009}.
+A reactive robot task specification is expressed in LTL formulas.
+Then the specification is automatically transformed to a correct-by-construction discrete controller.
+At last, the controller is continuously implemented to generate desired robot behaviors.
+Different from \cite{HKG2009}, in this work we aim to synthesize controllers for multiple robots executing a manipulation task.
+Therefore, there are three main challenges in this work for task planning, as described in the following sections.
+
+\subsection{Specification Language for Multi-robot}
+In \cite{ChenDSB12,Diaz-MercadoJBE15}, the author introduces an approach for specifying robot tasks in formal language and generating controllers for a team of robots. 
+However, the type of robot tasks is limited to non-reactive, i.e. the environment is assume static and the robot behavior does not depend on the environment state.
+The framework in \cite{HKG2009} allows reactive robot task, such as "if the robot sense a soda can, bring the can to the kitchen".
+However, the task specification only issues commands for a single robot.
+In order to specify reactive tasks for a team of robots, we need to extend the specification language to able to express  multi-robot tasks.
+
+\subsection{Tasks Allocation}
+The framework employed in this work will generate a centralized controller for a team of robots.
+We will then distribute tasks to each robots in a synchronized process.
+One method is to handle task allocation in the high-level specification.
+Therefore, task distribution for each robot will be encoded in the synthesized controller.
+The drawback for this method is that, whenever a new task allocation is required,
+possibly due to failing to find a feasible trajectory, the entire discrete controller needs to be resynthesized.
+Another method for task allocation is to treat all robots as one virtual robot with multiple redundant action abilities.
+The specification will only describe tasks for this virtual robot,
+and the task allocation will be determined when executing the synthesized controller.
+The disadvantage of this method is that the algorithm will spend more time during execution for computing the task allocation plan.
+Both method will be implemented in this work.
+We will compare the performance of both methods and choose the better one.
+
+\subsection{Feedback from Trajectory Planner}
+Once task are allocated to each robot, the task planner will invoke the trajectory planner to move each robot arm to desired location without collision.
+In the situation where the trajectory planner fails to find a feasible path for an arm,
+it will provide feedback to the task planner about such failure.
+The task planner will then incorporate the information into the task specification and come up with a new discrete plan.
+If no plan can be created, the task planner will notify the user the possible cause of failure, e.g. the robot arm cannot reach the desire position. 
