@@ -5,7 +5,7 @@ import actionlib
 import time
 import argparse
 
-from test_package.msg import verified_motionAction, verified_motionFeedback, verified_motionResult, verified_motionGoal
+from verified_torque_controller.msg import verified_motionAction, verified_motionFeedback, verified_motionResult, verified_motionGoal
 
 
 def feedback_fn(msg):
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     print('Declaring goal message ...')
     goal = verified_motionGoal()
     goal.arm = 'left'
-    goal.EFF_movement = [0.0, -0.25, 0.00] # [dx dy dz]
+    goal.EFF_movement = [0.0, 0.0, -0.1] # [dx dy dz]
     goal.motion_parameters = [1, 20, 10] # [stiffness, damping, duration]
     
     print('Sending goal message ... ')
