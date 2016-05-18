@@ -1,0 +1,13 @@
+# Define the goal
+string arm 		# Desired arm
+float32[] EFF_movement 	# x,y,z EFF displacement for connection
+float32[] motion_parameters # [joint_stiffness joint_damping control_duration]
+
+---
+# Define the result
+bool motion_complete 	# Indication the motion has been completed
+string error_message    # Failure message
+
+---
+# Define a feedback message
+
