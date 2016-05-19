@@ -5,6 +5,8 @@ import rospy
 
 import actionlib
 
+import os.path
+
 import matlab.engine
 
 from dynamic_reconfigure.server import (
@@ -50,13 +52,13 @@ class verifiedMotionServer:
         
         # Limbs,limb parameters
         self.limb = {}
-        self.limb["left"] = baxter_interface.Limb('left')
-        self.limb["right"] = baxter_interface.Limb('right')
+        self.limb["left_arm"] = baxter_interface.Limb('left')
+        self.limb["right_arm"] = baxter_interface.Limb('right')
         self._left_arm = baxter_interface.Limb('left')
         
         self._kin = {}
-        self._kin["left"] = baxter_kinematics('left')
-        self._kin["right"] = baxter_kinematics('right')        
+        self._kin["left_arm"] = baxter_kinematics('left')
+        self._kin["right_arm"] = baxter_kinematics('right')        
         
         self._springs = dict()
         self._damping = dict()
@@ -69,7 +71,7 @@ class verifiedMotionServer:
         
         # Initialize Matlab
         # Start matlab
-        print("Starting MATLAB...")
+        print("\n Starting MATLAB...")
         self.eng = matlab.engine.start_matlab() # start matlab
         print("Matlab started.")
         print("Initializing robotic toolbox files ...")
@@ -85,8 +87,8 @@ class verifiedMotionServer:
         print("Enabling robot... ")
         self._rs.enable()
         
-        self.move_to_neutral('left')
-        self.move_to_neutral('right')
+        #self.move_to_neutral('left_arm')
+        #self.move_to_neutral('right_arm')
         
         print('Starting server ...')
         self.server.start()
@@ -119,7 +121,7 @@ class verifiedMotionServer:
         # Verify the motion
         # Compute flowstar file - verify the controller
         print("Computing Flow* file, verifying the motion ...")
-        self._update_parameters(goal.arm)
+        #self._update_parameters(goal.arm)
         #timeEnd = matlab.double([self._sim_time])
         #springMod = matlab.double([self._spring_modifier])
         #dampingMod = matlab.double([self._damping_modifier])
@@ -139,13 +141,30 @@ class verifiedMotionServer:
         
         ctrlTime = self._sim_time # in seconds
         ctrlTrigger = True
-        start = rospy.Time.now()
+        #start = rospy.Time.now()
+        startTime = rospy.get_time()
 
-        print("Implementing torque control ...")        
+        print("Implementing torque control ...")    
+        
+        dataSavePath = '/home/scotto/Documents/MATLAB/flowstar_plots'
+        fileName = 'python_EFF_motion_data'
+        timeVec = []
+        effX = []
+        effY = []
+        effZ = []
         
         while ctrlTrigger:
-            nowTime = rospy.Time.now()
-            timeDiff = nowTime.secs - start.secs
+            #nowTime = rospy.Time.now()
+            nowTime = rospy.get_time()
+            #timeDiff = nowTime.secs - startTime.secs
+            timeDiff = nowTime - startTime
+            # Record time/position data
+            timeVec.append(timeDiff)
+            currentEFFposition = self.limb[goal.arm].endpoint_pose()
+            effX.append(currentEFFposition['position'].x)
+            effY.append(currentEFFposition['position'].y)
+            effZ.append(currentEFFposition['position'].z)
+            # End recording stuffs
             if timeDiff >= ctrlTime:
                 ctrlTrigger = False
             self._update_forces(goal.arm)
@@ -157,6 +176,20 @@ class verifiedMotionServer:
         print("Torqe control complete.")
         self.result.motion_complete = True
         self.server.set_succeeded(result=self.result)
+        
+        
+        # Record position and time data
+        #   Concatenate data
+        concatenatedData = []
+        for i in range(0, len(timeVec)):
+            concatenatedData.append(str(timeVec[i]) + ' ' + str(effX[i]) + ' ' + str(effY[i]) + ' ' + str(effZ[i]))
+            
+        completeName = os.path.join(dataSavePath,fileName + '.txt')
+        file1 = open(completeName, "w+")
+        for item in concatenatedData:
+            file1.write("%s\n" % item)
+        file1.close()
+        
         
     def generate_target_angles(self,arm,targetXYZ):
         print("Generating target joint angles ...")
@@ -203,7 +236,7 @@ class verifiedMotionServer:
             
         
         angles = self.limb[arm].joint_angles()
-        if arm == 'left':
+        if arm == 'left_arm':
             angles['left_s0'] = pykdl_end_angles[0]
             angles['left_s1'] = pykdl_end_angles[1]
             angles['left_e0'] = pykdl_end_angles[2]
@@ -211,7 +244,7 @@ class verifiedMotionServer:
             angles['left_w0'] = pykdl_end_angles[4]
             angles['left_w1'] = pykdl_end_angles[5]
             angles['left_w2'] = pykdl_end_angles[6]
-        elif arm == 'right':
+        elif arm == 'right_arm':
             angles['right_s0'] = pykdl_end_angles[0]
             angles['right_s1'] = pykdl_end_angles[1]
             angles['right_e0'] = pykdl_end_angles[2]
@@ -275,8 +308,8 @@ class verifiedMotionServer:
         Switches out of joint torque mode to exit cleanly
         """
         print("\nExiting process...")
-        self.limb["left"].exit_control_mode()
-        self.limb["right"].exit_control_mode()
+        self.limb["left_arm"].exit_control_mode()
+        self.limb["right_arm"].exit_control_mode()
         #if not self._init_state and self._rs.state().enabled:
         #    print("Disabling robot...")
         #    self._rs.disable()

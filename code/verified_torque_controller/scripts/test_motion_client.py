@@ -23,7 +23,7 @@ if __name__ == '__main__':
     
     print('Declaring goal message ...')
     goal = verified_motionGoal()
-    goal.arm = 'left'
+    goal.arm = 'left_arm'
     goal.EFF_movement = [0.0, 0.0, -0.1] # [dx dy dz]
     goal.motion_parameters = [1, 20, 10] # [stiffness, damping, duration]
     
