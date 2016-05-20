@@ -1,4 +1,4 @@
-\section{Motion Planning Module(Catherine)}
+\section{Motion Planning Action Service(Catherine)}
 
 %Motivation (why did you do it, who should care about it)
 %Clearly state your contributions
@@ -12,17 +12,18 @@
 %\item Trajectory Executor for robot arm trajectory execution.
 %\end{enumerate}
 
-The motion planning module can be separated into three submodules as shown in Fig.~\ref{fig:plan}.
+The motion planning action service can be separated into three components as shown in Fig.~\ref{fig:plan}.
 
 \begin{figure}[ht!]%[H]
 \centering
 {\includegraphics[width=0.95\columnwidth]{pics/motion_planning_flow.png}}
-\caption{Motion Planning Module}
+\caption{Motion Planning Action Service}
 \label{fig:plan}
 \end{figure}
 
+The motion planning action service is an action service in ROS and based on the action types: move\_to, gripper or get\_tag, the service executes different actions and returns requested information.
 
-\subsection{Trajectory Planner (move\_to module)}
+\subsection{Trajectory Planner (move\_to component)}
 
 During execution, the task planner requests the path planner to create trajectory plans for one or more robot arms. The planner aims to find a plan that (i) each arm starts at its initial configuration, and (ii) each arm ends with each robot end effector within a certain distance from the final desired workspace position. 
 
@@ -39,103 +40,93 @@ The major objects to avoid in path planning are the table and all the modules ex
 \paragraph{Octamap}\label{obstacle-octamap}
 For our first attempt, we subscribe to the depth information of a Kinect facing the robot and create an octamap around the robot. An octamap is a 3-D occupany grid that builds an obstacle map around the source, in this case the Kinect, and updates over time with new information of the evolving environment. Figure~\ref{fig:octamap} shows an example of the octamap around Baxter.
 
-Since the modules are modeled as obstacles in the octamap, to approach and grasp the module, we remove the target module from the octamap through inserting a module-like scene object into the workspace (Fig ????????). The octamap automatically subtracts any scene objects and by excluding the module object from the collision checking in trajectory planning, MoveIt! can find a path to the module.
+Since the modules are modeled as obstacles in the octamap, to approach and grasp the module, we remove the target module from the octamap through inserting a module-like scene object into the workspace (Fig.~\ref{fig:octamap_object}). The octamap automatically subtracts any scene objects and by excluding the module object from collision check during trajectory planning, MoveIt! can find a path to the module.
 
 \paragraph{Table object}\label{obstacle-table}
-Since the environment of the workspace is given, the other way to model obstacles in the environment is simply adding a table object right in front of Baxter. 
+Since the environment of the workspace is given, the other way to model obstacles in the environment is simply adding a table object right in front of Baxter, as shown in Fig.~\ref{fig:table_only}. 
 
-We compared the performance of the two approaches for modeling obstacles. It turns out clustering of modules could be a problem when using an octamap and no plans can be found. If we simply model the environment with only a table in front, the resulting plan may sometimes touch the other modules. However, looking at Fig.~\ref{fig:table}, notice that the table object is a pretty good representation of the obstacle information from the octamap. Since the modules are movable in the workspace, we determined that it will be better to get a plan most of time and we go on with ~\ref{obstacle-table} to model obstacles. 
+We compared the performance of the two approaches for modeling obstacles. It turned out clustering of modules could be a problem when using an octamap and MoveIt! could not find a plans. On the other hand, when we simply model the environment with only a table in front, the resulting plan may sometimes touch the other modules. Looking at Fig.~\ref{fig:table}, notice that the table object is a pretty good representation of the obstacle information from the octamap. Since the modules are movable in the workspace, we determined that it will be better to get a plan most of time and we go on with approach b) to model obstacles. 
 
 %\quad
 %\quad
-\begin{figure}[ht!]%[H]
+\begin{figure*}[h]
+%\begin{figure}[ht!]%[H]
 \centering
-\subfloat[Real Scenario of Baxter with modules on a table]{\includegraphics[width=0.31\columnwidth]{pics/baxter_real_table.png}\label{fig:realBaxter}}\hspace{0.1cm}
-\subfloat[Octamap from depth data of Kinect in Rviz]{\includegraphics[width=0.31\columnwidth]{pics/baxter_with_octamap.png}\label{fig:octamap}}\hspace{0.1cm}
-\subfloat[Octamap from depth data of Kinect with a table object inserted in Rviz]{\includegraphics[width=0.31\columnwidth]{pics/baxter_with_table.png}\label{fig:table}}
+\subfloat[Real Scenario of Baxter with modules on a table]{\includegraphics[width=0.35\columnwidth]{pics/baxter_real_table.png}\label{fig:realBaxter}}\hspace{0.1cm}
+\subfloat[Octamap from depth data of Kinect in Rviz]{\includegraphics[width=0.35\columnwidth]{pics/baxter_with_octamap.png}\label{fig:octamap}}\hspace{0.1cm}
+\subfloat[Octamap from depth data of Kinect with a module object inserted in Rviz]{\includegraphics[width=0.35\columnwidth]{pics/baxter_octamap_with_object.png}\label{fig:octamap_object}}\hspace{0.1cm}
+\subfloat[Table object inserted in Rviz as obstacle]{\includegraphics[width=0.35\columnwidth]{pics/baxter_with_table_only.png}\label{fig:table_only}}\hspace{0.1cm}
+\subfloat[Octamap from depth data of Kinect with a table object inserted in Rviz]{\includegraphics[width=0.35\columnwidth]{pics/baxter_with_table.png}\label{fig:table}}
 \\
 \caption{Modeling obstacles in trajectory planning}
-\end{figure}
+\end{figure*}
 
 
 
-\subsubsection {transformation}~\\
-First, we obtain a rough location of the module from the Kinect sensor based on camera feed. Then, we transform the tag pose such that the final location of the gripper will be approximately above the module,  and also flip the axis of the module and this will be the goal pose of the gripper in consideration. The transformation can be formulate with the following two questions.
+\subsubsection {Transformation of Tag Pose to Gripper's Goal Pose}~\\
+To plan an arm trajectory, the algorithm also requires the goal pose of the gripper to plan accordingly.  The goal pose can be separated into two components: the xyz-position of the pose ($p_{\mathrm{effector}}$) and the orientation of the pose ($q_{\mathrm{effector}}$) in the form of a quaternion.
 
-$\mathrm{endEffectorPose}=
-\begin{bmatrix}
-    X_{offset} \\
-    Y_{offset} \\
-    Z_{offset}
-\end{bmatrix}
-+
-\begin{bmatrix}
-    \mathrm{tagPose}_{x} \\
-    \mathrm{tagPose}_{y} \\
-    \mathrm{tagPose}_{z} \\
-\end{bmatrix}
-$
+The gripper goal pose comes from the target module pose, which consists of the position ($p_{\mathrm{tag}}$) and orientation of the module ($q_{\mathrm{tag}}$). For the goal position ($p_{\mathrm{effector}}$), it is either exactly the same as the tag position ($p_{\mathrm{tag}}$) or with a small offset ($p_{\mathrm{offset}}$) from the tag position. The goal position can be represented with the following equation:
 
-$q_{tag/world} = (r_t,\overrightarrow{v}_t)$
-$q_{goal/world} = (r_g,\overrightarrow{v}_g)$
-$q_{goal/world} = (r_g,\overrightarrow{v}_g)$
+%\begin{bmatrix}
+%    \mathrm{offset}_{x} \\
+%    \mathrm{offest}_{y} \\
+%    \mathrm{offset}_{z}
+%\end{bmatrix}
+%+
+%\begin{bmatrix}
+%    \mathrm{tagPosition}_{x} \\
+%    \mathrm{tagPosition}_{y} \\
+%    \mathrm{tagPosition}_{z} \\
+%\end{bmatrix}
+\begin{equation}
+p_{\mathrm{effector}}= p_{\mathrm{offset}}+p_{\mathrm{tag}}
+\end{equation}
 
-$(|o|,\overrightarrow{orientation}_{tag/world}) = $
+In this project, all the modules have z-axis pointing upwards. However, to grasp a module, the gripper should point downwards, i.e., z-axis of the gripper points downwards. To obtain the goal orientation ($q_{\mathrm{effector}}$), our system rotates the tag orientation about x-axis by $\pi$ radians, as shown in the following equation: 
 
-$\mathrm{orientation}=
-\begin{bmatrix}
-    1 & 0 & 0 & X_{offset} \\
-    0 & 1 & 0 & Y_{offset} \\
-    0 & 1 & 0 & Z_{offset} \\
-    0 & 0 & 0 & 1 \\
-\end{bmatrix}
-\begin{bmatrix}
-    1 & 0 & 0 & X_{pose} \\
-    0 & 1 & 0 & Y_{pose} \\
-    0 & 1 & 0 & Z_{pose} \\
-    0 & 0 & 0 & 1 \\
-\end{bmatrix}
-$
+\begin{equation}
+q_{\mathrm{effector}}= q_{\mathrm{tag}}\: q_{\mathrm{zFlip}}\mathrm{,\ where\ } q_{\mathrm{zFlip}} =  (0}, \mathbf{i})
+\end{equation}
 
-%figure for difference between kinect pose and pose from camera
 
-\subsubsection {two-step planning}~\\
-Through testing our approach, our group have noticed that the camera information from a Kinect sensor does not give an accurate position of the modules with the recognition of AprilTags~\cite{Olson11}. The position of the module from Kinect is off by about 5cm and this is not good enough for the arm and gripper to arrive at the module location and grasp the module.
- 
- %%%%%%%%%
-In this work, we propose a two-step trajectory planning. 
+\subsubsection {Two-step Trajectory Planning}~\\
+Through testing our approach, our group have noticed that the camera information from a Kinect sensor facing the 
+\begin{wrapfigure}{r}{0.45\columnwidth}
+\begin{center}
+\vspace{-8pt}
+\includegraphics[width=0.45\columnwidth]{pics/kinect_tag_pose3_croped.png}
+\caption{Differences in pose when using different sensor information.}
+\label{fig:offTagPose}
+\vspace{-12pt}
+\end{center}
+\end{wrapfigure}
+robot does not give an accurate position of the modules using AprilTags recognition~\cite{Olson11},  
+as the distance from Kinect to the module increases. 
+The position of the modules from Kinect is off by about 5cm and it is not good enough for the arm and gripper to arrive at the module location and grasp the module. Fig.~\ref{fig:offTagPose} shows the differences of tag pose when using the Kinect sensor (tag\_4) and the left hand camera (left\_hand\_tag\_4).
 
-Once the robot arms moves to the 'rough' location, now the robot can use the camera on its hand to obtain a better location estimate of the module.  With a more accurate location, the system then do a fine planning to the grasp location of the module. 
+With this observation, in this work, we propose a two-step trajectory planning, which consists of a `rough' planning step and a `fine' planning step, and both steps leverage RRT to conduct the planning. 
 
-If the planner finds a plan, it returns the joint-space trajectory for each arm. If the planning exceeds the time limit, then the planner aborts and returns no trajectories. 
+From an arbitrary location, our system first conducts a `rough' planning to have the gripper arrive at a pose that is roughly above the module using the tag information from the Kinect sensor, with the gripper pointing downwards at the module.
+
+Once the robot arms moves to the 'rough' location, now the robot  uses the camera on its hand to obtain a better location estimate of the module. With a more accurate location, the system then conduct a `fine' planning to the grasp location of the module. 
+
+\subsubsection{Execute Trajectory}~\\
+Once a trajectory is found through `rough' planning or `fine' planning, the action service executes the trajectory and returns the result.
+
+
+\subsection{Open/Close Gripper (gripper component)}
+When receiving a request to open and close gripper, the component executes the command and returns the result.
+
+\subsection{Retrieve Module Pose (get\_tag component)}
+Besides responding to different action requests, the action service can also get the pose of a module and return the pose to the client. With the pose, the client can transform the pose according to his or her needs and request trajectory planning with a given pose, as shown in Fig.~\ref{fig:plan} with command move\_to and a target pose.
+
 
 \subsection{Failures}
-Since RRT is probabilistic complete, it may not find a path given a finite time horizon. As a result, it is useful to provide feedback to the client that the planning failed. In our case, we can find out if a plan is found and return the status of each planning to the client so client can execute other things when waiting for the execution of the plan. 
+Since the trajectory planning algorithm RRT is probabilistic complete, it may not find a path given a finite time horizon. It is useful to provide feedback to the client about the status of the request or that the planning failed. In our system, it returns not only the planning result but also the current process in execution to the client so that the client is always informed.
 
+Besides the trajectory planner may not return or execute a plan, the gripping motion and the retrieveal of module pose can also fail. All these failure information are returned to the client, as shown with the red failed arrows in Fig.~\ref{fig:plan}.
 
-The pose of each module comes from either an external Kinect or from the two cameras on the robot hand. Since poses detection are inaccurate if too far from the module. Thus, we came up with a two-step planning.
-
-
-The two steps both leverage RRT to conduct the planning. First the algorithm does a rough planning to a certain distance above the module given a location from the Kinect. If the planning is successful, then our system retrieves the tag pose again but this time using the camera on the hand. Since the arm is roughly on the top of the module, this results in a better approach towards the module and at the end grasp the module
-
-% To insert: show difference in kinect pose and pose from hand. 
-
-
-
-
-Our motion will always come from the top in this system. 
-
-
-The action server lib is can respond to five different action requests
-\begin{itemize}
-\item open gripper
-\item close gripper
-\item go to a pose that the hand camera can see the tag, with a fix pose pre-given
-\item go to a tag
-\item get tag pose
-\end{itemize}
-
-the section also in charge of getting the pose of different modules if receiving a request from the high-level planner or the joint controller
 
 other attempts
 \begin{itemize}
@@ -175,7 +166,14 @@ During the planning phrase, we plan to optimize the final trajectory by reducing
 
 
 
-\subsection{Trajectory Executor}
+%The action server lib is can respond to five different action requests
+%\begin{itemize}
+%\item open gripper
+%\item close gripper
+%\item go to a pose that the hand camera can see the tag, with a fix pose pre-given
+%\item go to a tag
+%\item get tag pose
+%\end{itemize}
 
-Besides a trajectory planner, the person in charge of this component also creates a trajectory executor that executes any given trajectory.
-Once the task planner receives a plan, it can invoke the trajectory executor to execute the path. The executor takes in a joint-space trajectory and notifies the task planner when it finishes the execution. The task planner then invokes planning by the action planner in the next section to conduct fine and accurate objects manipulation.
+
+
