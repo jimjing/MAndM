@@ -86,7 +86,7 @@ p_{\mathrm{effector}}= p_{\mathrm{offset}}+p_{\mathrm{tag}}
 In this project, all the modules have z-axis pointing upwards. However, to grasp a module, the gripper should point downwards, i.e., z-axis of the gripper points downwards. To obtain the goal orientation ($q_{\mathrm{effector}}$), our system rotates the tag orientation about x-axis by $\pi$ radians, as shown in the following equation: 
 
 \begin{equation}
-q_{\mathrm{effector}}= q_{\mathrm{tag}}\: q_{\mathrm{zFlip}}\mathrm{,\ where\ } q_{\mathrm{zFlip}} =  (0}, \mathbf{i})
+q_{\mathrm{effector}}= q_{\mathrm{tag}}\: q_{\mathrm{zFlip}}\mathrm{,\ where\ } q_{\mathrm{zFlip}} =  (0, \mathbf{i})
 \end{equation}
 
 
@@ -127,53 +127,25 @@ Since the trajectory planning algorithm RRT is probabilistic complete, it may no
 
 Besides the trajectory planner may not return or execute a plan, the gripping motion and the retrieveal of module pose can also fail. All these failure information are returned to the client, as shown with the red failed arrows in Fig.~\ref{fig:plan}.
 
+\subsection{Results}
+Compared to our plan in the proposal, we have successfully conducted trajectory planning for one arm and two arms simultaneously. We were out of time and we did not get to try planning four arms together. The action service is also able to detect and report failure.
 
-other attempts
-\begin{itemize}
-\item also tried broadcasting the goal location of the robot to tf and then fetch it, but then there is a lot of overhead and it will be easier doing transformation leveraging the tf.transformation module.
-\item also played with the inverse kinematic library (pyKDL) before but when switch it moveit, all the inverse kinematics are handled by Moveit.
-\item originally tried to generate waypoints of trajactory. To populate points on the RRT tree, but collision detection is using FCL but moveit set up the environment/scene so using moveit now.
-\item create object and then removing to from collision matrix. in this case, the robot can contact the object and the octamap is cleared at the point. The downside was the filtering wasn't good around the grippers. Also adding a table gives a close approximation. 
-\end{itemize}
+We have tried creating our version of RRT but modeling of the environment and checking collision between joints posed challenges. Since MoveIt! gives reliable results, our action service is using the software as the core planning interface.
 
-\subsection{open and close gripper}
-
-%--------- old %%%%
+We did not detail our plan to obtain target pose in the proposal but in the final result the action service is able to transform pose and return pose information. The action service can also respond to requests of opening and closing gripper.
 
 
-First, we plan to try two different RRT approaches and compare their performance. With RRT, there are still multiple ways to generate a trajectory plan.
-One of them is to generate trajectory plan synchronously.
-For example, if there are four arms available for a task, or two Baxters, then the planning could be synchronous, i.e, we plan all the arms at the same time and each node in RRT stores the joint information of the four arms. With each arm having 7 degrees of freedom (DoF), a synchronous planning has up to 28 degrees of freedom.
-With this approach, assuming the workspace has no other obstacles, collision avoidance with the other arms is taken care of during the planning phase so it is unnecessary during trajectory execution.  
-The trade off of synchronous planning is that one arm may wait for the others even though its trajectory is found.
-
-Alternatively, another way would be to first create a plan each arm separately and assign priorities to each arm. An arm then replans only when its trajectory intersects with the plan of another arm with a higher priority. Compared with the synchronous approach, each planning contains 7 degrees of freedom but re-plannings of trajectory can go up to (n-1) times, with n being the number of arms. 
-
-Second, we plan to create our own version of RRT planner and also utilize off-the-shelf library with RRT such as the Open Motion Planning library (OMPL)~\cite{sucan2012the-open-motion-planning-library} to find out the one with better performance.
-Compared with creating our own RRT planner, OMPL has lots of planning algorithms available, but most examples of OMPL work with single robot or arm and planning for multiple arms simultaneously with OMPL may be unfeasible. We plan to learn more about OMPL and then decide if we are creating our own RRT planner or we are using OMPL to build our planner.
-
-Finally, RRT is only a template for planning and we need to complete the template with ways to propagate a trajectory and smoothen the resulting trajectory. 
-During the planning phrase, we plan to optimize the final trajectory by reducing the difference in joint angles between two nodes in the RRT tree. We use inverse kinematics find robot joint angles given a desired location of the end effector.
-
-
-%To conduct a path planning of the robot arms, the planner takes in:
-
+%other attempts
 %\begin{itemize}
-%\item the number of arms we are planning, 
-%\item the starting joint configurations of each arm, and
-%\item the final workspace positions of robot end effectors.
+%\item also tried broadcasting the goal location of the robot to tf and then fetch it, but then there is a lot of overhead and it will be easier doing transformation leveraging the tf.transformation module.
+%\item also played with the inverse kinematic library (pyKDL) before but when switch it moveit, all the inverse kinematics are handled by Moveit.
+%\item originally tried to generate waypoints of trajactory. To populate points on the RRT tree, but collision detection is using FCL but moveit set up the environment/scene so using moveit now.
+%\item create object and then removing to from collision matrix. in this case, the robot can contact the object and the octamap is cleared at the point. The downside was the filtering wasn't good around the grippers. Also adding a table gives a close approximation. 
 %\end{itemize}
 
 
 
-%The action server lib is can respond to five different action requests
-%\begin{itemize}
-%\item open gripper
-%\item close gripper
-%\item go to a pose that the hand camera can see the tag, with a fix pose pre-given
-%\item go to a tag
-%\item get tag pose
-%\end{itemize}
+
 
 
 
