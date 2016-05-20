@@ -33,10 +33,16 @@ It should be noted that Coriolis effects, $\mathbf{C}$, are ignored due to the s
 
 \subsection{ROS Action Server and Code Diagram}
 The action planner, comprised of the reachability analysis, controller verification, and joint torque controller execution are implemented as an action server in ROS.
-The code block diagram is shown in figure [FIGURE].
+The code block diagram is shown in figure Fig. \ref{fig:actionPlannerFlow}.
 The action server, when called by the task planner when a connection need to be performed, polls the current state of the arm holding the module to be attached, computes the linearized matrices, generates a Flow* file, performs the reachability computation for the given feedback controller, then executes the motion.
 The server creates an instance of Matlab when launched, which is then used for the kinematics computations and controller design.
 The kinematics computations and linear model generation are done using the Matlab Robotics Toolbox \cite{Corke11a}.
+
+\begin{figure}[h]
+	\includegraphics[width = 8 cm]{action_server_2.png}
+	\caption{Action Planner Module}
+	\label{fig:actionPlannerFlow}
+\end{figure}
 
 
 \subsection{Difficulties with Baxter Joint Torque Control}
@@ -57,9 +63,44 @@ As oscillations are undesirable when connecting modular components, the damping 
 It should be noted that both the spring and damping coefficient values are passed in to the action planner server when called and, as such, may be altered at runtime by the task planner.
 
 \subsection{Verified Motion Example}
-The results of the execution of a simple motion command on the left arm by the action planner are shown in [FIGURES].
+The results of the execution of a simple motion command on the left arm by the action planner are shown in Figures \ref{fig:effX},\ref{fig:effY}, and \ref{fig:effZ}.
 In this example, the input desired EFF motion is appx. 10 cm in the negative z direction (toward the ground) in the Baxter global reference frame, starting in the neutral arm position.
+The values plotted are with respect to the starting $x/y/z$ EFF position.
 
+\begin{figure}[h]
+	\includegraphics[width = 8 cm]{effx_example.png}
+	\caption{Example Action Planner Execution, EFF $X$ motion}
+	\label{fig:effX}
+\end{figure}
+
+\begin{figure}[h]
+	\includegraphics[width = 8 cm]{effy_example.png}
+	\caption{Example Action Planner Execution, EFF $Y$ motion}
+	\label{fig:effY}
+\end{figure}
+
+\begin{figure}[h]
+	\includegraphics[width = 8 cm]{effz_example.png}
+	\caption{Example Action Planner Execution, EFF $Z$ motion}
+	\label{fig:effZ}
+\end{figure}
+
+The Flow* approximations, shown in green, show the computed reachable set for each EFF position variable $(x,y,z)$ as a function of time.
+The range of the reachable set are small at each time step as the initial conditions for the computation are scalar values rather than a range.
+Given a range of initial conditions (representing, for example, error in the measured joint angles) the computed reachable sets would show a greater range of values - the green lines wold appear more like funnels showing the over approximated upper and lower bounds for the variables.
+The reachable sets shown are computed with scalar initial conditions for clarity.
+
+The reachable sets computed from the linear model predict small deviations (< 2 cm) of the $x$ and $y$ EFF values during the motion and show the $z$ value converging to the desired value of -0.1, albeit with some oscillation.
+Despite the near 5 cm overshoot in the $z$ direction predicted by the linear model, the small predicted $x$ and $y$ deviations may be sufficient for a successfully attaching a module.
+However, the EFF motions recorded in the Baxter simulator and physical robot clearly do not agree with the predicted motions.
+The data from the simulated Baxter robot shows significantly increased oscillations and the data from the physical robot shows stiff, heavily damped motions.
+The motions of the physical robot during the execution of the action planner were observed to be stiff, jerky, and unrepeatable, likely due to significant, asymmetric friction in the arm joints.
+As such, the output of the reachable set computation is not valid for determining the safety of a given controller.
+
+\subsection{First Order Joint Control}
+A first order (joint speed) controller was implemented in an effort to avoid the erratic behavior of the LQR and PD joint torque controllers.
+Using the global reference frame Jacobian computed in the Matlab Robotics Toolbox, the required joint velocities are computed for a desired end effector translation.
+This controller was used for the demonstration examples.
 
 
 
