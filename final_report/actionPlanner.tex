@@ -1,5 +1,75 @@
 \section{Action Planning and Verification (Scott)}
 
+The action planning process involves modeling the manipulator behavior and verifying a controller with respect to any safety conditions specified by the user.
+The trajectory planner is responsible for executing a rough motion of the manipulator to some approximate pose near the final desired location of the end effector (EFF).
+In the case of the modular robot assembly, the trajectory planner moves the modular robot component to be attached to a location near the final attachment EFF pose.
+The task planner provides the desired translation of the EFF in the global reference frame (necessary for making the connection) to the action planner, which then executes the motion once it the controller has been verified.
+
+
+\subsection{Continuous System Verification}
+In order to avoid undesirable robot motions, the user specifies a set of unsafe states of the robot, $\varphi$, for a given action or motion of the manipulator.
+For the case of modular robot assembly, the unsafe set is defined to be those poses of the end effector during an attachment motion that may result in a failed attachment or improper connection (magnet misalignment).
+A given controller may be verified to cause the system remain within the safe set (no intersection with the unsafe set) by computing the set of all reachable states, $\textit{ReachSet}_{\mbox{\textit{H}}}$, from some initial condition ,$X_0 \subseteq X$.
+However, the exact set of reachable states is difficult \cite{Henzinger:1995:WDH:225058.225162}, and an over approximation of the reachable set is instead computed.
+The controller is verified if the over approximated set is contained within the set of states that satisfy the safety conditions, $\mbox{\textit{ReachSet}}_{\mbox{\textit{H}}} \subseteq \mbox{Sat}(\varphi)$.
+The controller and motion are not verified if there is an intersection of the reachable states and the unsafe set, $\mbox{\textit{ReachSet}}_{\mbox{\textit{H}}} \cap \neg \mbox{Sat}(\varphi) \neq \emptyset$.
+In the case where some intersection of the unsafe set and reachable set occurs, no conclusions may be drawn from the analysis as the reach set is an over approximation and re-planning of the manipulator (by the trajectory planner) is required.
+
+This process is similar to the framework in \cite{6016596}, whereby the control architectures of an autonomous robotic surgery manipulator are verified for a puncturing tasks, whereby the EFF (puncturing instrument) is guaranteed to remain within some pose bounds.
+In this work, the reachability tool Flow* \cite{Chen2013} is used to over approximate the system dynamics using Taylor Model flowpipes.
+Flow* is capable of handling nonlinear systems, but as manipulators are highly nonlinear, the dynamics of the Baxter arms are linearized in an effort to increase computation speed. 
+
+
+\subsection{Manipulator Modeling}
+The dynamics of each of the Baxter arms can be represented as:
+\begin{equation}
+	\mathbf{M}(\underline{q})\ddot{\underline{q}} + \mathbf{C}(\underline{q},\underline{\dot{q}})\dot{\underline{q}} + \mathbf{G}(\underline{q}) = \underline{T}_{eff} + \underline{T}_{in}
+\end{equation}
+Where $\mathbf{M}$ and $\mathbf{C}$ represent the inertial effects, $\mathbf{G}$ represents joint torques due to gravity, $\underline{T}_{EFF}$ represents the joint torques due to EFF load, and $\underline{T}_{in}$ represents the input joint torques.
+In this case, linearizing the arm dynamics involves evaluating the nonlinear $\mathbf{M}$, $\mathbf{C}$, and $\mathbf{G}$ matrices for a given arm configuration.
+As the action planner only executes arm motions for small EFF motions (and subsequently small changes in joint angle) it is assumed that these matrices remain constant for the duration of the arm motion executed by the action planner.
+It should be noted that Coriolis effects, $\mathbf{C}$, are ignored due to the small motions of the arm.
+
+
+\subsection{ROS Action Server and Code Diagram}
+The action planner, comprised of the reachability analysis, controller verification, and joint torque controller execution are implemented as an action server in ROS.
+The code block diagram is shown in figure [FIGURE].
+The action server, when called by the task planner when a connection need to be performed, polls the current state of the arm holding the module to be attached, computes the linearized matrices, generates a Flow* file, performs the reachability computation for the given feedback controller, then executes the motion.
+The server creates an instance of Matlab when launched, which is then used for the kinematics computations and controller design.
+The kinematics computations and linear model generation are done using the Matlab Robotics Toolbox \cite{Corke11a}.
+
+
+\subsection{Difficulties with Baxter Joint Torque Control}
+Initially, the controller used in the action planner server was a linear quadratic regulator (LQR) controller computed by Matlab.
+The LQR controller provided feedback joint torques while a static input was added to counteract gravitational effects ($\mathbf{G}$ torques).
+However, this controller, when implemented on the Baxter platform, resulted in erratic arm motions despite satisfactory performance in the Baxter simulator.
+The Baxter platform provides a ``zero-gravity'' mode of operation whereby the robot continually provides torques to each joint sufficient to counteract gravitational effects.
+The LQR controller, when implemented in ``zero-gravity'' mode (without the added gravitational torque compensation), resulted in arm ``drift,'' whereby the arm would slowly diverge from the initial condition.
+Increasing the control effort did not improve the ability of the LQR controller to overcome the perceived arm ``drift.''
+When the LQR controller was implemented with the ``zero-gravity'' mode disabled (which included the gravitational torque compensation), the resulting arm motion was wildly erratic.
+Operating with the ``zero-gravity'' mode disabled is not recommended.
+
+The controller implemented in the final version of the action planner server (torque control) is a PD controller.
+The robot has pre-defined joint spring and damping coefficients that can be called for PD joint torque control.
+This controller (when used in ``zero-gravity'' mode) results in stable arm motion, both in simulation and on the physical robot.
+However, the default spring and damping values result in significant arm oscillations when the robot is moving from one configuration to another.
+As oscillations are undesirable when connecting modular components, the damping values are increased.
+It should be noted that both the spring and damping coefficient values are passed in to the action planner server when called and, as such, may be altered at runtime by the task planner.
+
+\subsection{Verified Motion Example}
+The results of the execution of a simple motion command on the left arm by the action planner are shown in [FIGURES].
+In this example, the input desired EFF motion is appx. 10 cm in the negative z direction (toward the ground) in the Baxter global reference frame, starting in the neutral arm position.
+
+
+
+
+
+
+
+
+
+
+\begin{comment}
 The action planning stage of the assembly process is broken down into two parts: modeling the manipulator behavior as a hybrid system and verifying safety conditions of the end effector motions (making sure that undesirable motions do not occur).
 
 \subsection{Hybrid system modeling}
@@ -20,4 +90,5 @@ If $\mbox{\textit{ReachSet}}_{\mbox{\textit{H}}}$ does not intersect with the se
 
 In the case that $\mbox{\textit{ReachSet}}_{\mbox{\textit{H}}} \cap \neg \mbox{Sat}(\varphi) \neq \emptyset$, the inconclusive nature of the system is communicated to the trajectory planner and the system will either (i) re-plan the arm motions or (ii) adjust the boundaries specified in the safety conditions, $\varphi$ and recompute the system reachability.
 
+\end{comment}
 

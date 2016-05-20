@@ -1,5 +1,26 @@
 \section{Introduction and Background}
-%With the development of hardware and software of robots,
+
+
+Creating robot controllers by combining high-level task planning with low level motion planning has been a topic of recent interest \cite{HKG2009,Belta2008,Bhatia2011,Dornhege2009,Erdem2011,Tom2014,Srivastava2014}.
+The integration of discrete task reasoning and motion planning allows users to specify complex robot behaviors and tasks from a high-level perspective while satisfying low level motion constraints.
+
+Past research has shown promising results on controller synthesis with formal methods \cite{HKG2009,Belta2008,Bhatia2011,Wongpiromsarn,Maly,Vasile}.
+Recent research has addressed controller synthesis using formal methods, specifying tasks and behaviors in a formal language such as Linear Temporal Logic (LTL) \cite{HKG2009,Belta2008,Bhatia2011,Dornhege2009,Erdem2011,Tom2014,Srivastava2014}.
+Controllers synthesized in this manner are correct-by-construction, thereby providing guarantees on the behavior of the robot.
+These algorithms typically abstract the robot system and environment by discretizing the workspace.
+This technique works well for mobile robot systems, but discretizations for manipulation systems are typically intractable due to combinatorial blow-up of the state space.
+
+Formal methods have previously been applied to controller synthesis for manipulation \cite{Dornhege2009,Erdem2011,Tom2014,Srivastava2014,CambonAG09,KaelblingL11,PlakuH10,HeLKV15}.
+Most of these works utilize AI based planners for high-level task planning and low-level motion planners for finding feasible robot trajectories \cite{Nau,Hoffmann01}.
+While these frameworks allow users to specify high-level behaviors and task specifications, the resulting behaviors are non-reactive in that the robot behavior does not depend on the state of the environment.
+
+This work addresses synthesizing correct-by-construction controllers for a manipulation task from a high-level behavioral specification.
+This framework provides three main contributions: a high-level {\it task planner} for determining sequences of high-level actions, a {\it trajectory planner} for finding and executing feasible manipulator motions, and an {\it action planner} for performing precise manipulator motion and actuation.
+This framework is is demonstrated on a Baxter robot (Rethink Robotics) assembling a series of modular robot components into a pre-defined configuration. 
+
+
+\begin{comment}
+With the development of hardware and software of robots,
 There is an increasing interest in combining high-level task planning
 with low-level motion planning when creating robot controllers \cite{HKG2009,Belta2008,Bhatia2011,Dornhege2009,Erdem2011,Tom2014,Srivastava2014}.
 While integrating tasking and motion planning enables users to specify complex robot tasks from a high-level perspective,
@@ -8,7 +29,7 @@ combining discrete task reasoning with continuous motion planning brings challen
 Past research has shown promising results on controller synthesis with formal methods \cite{HKG2009,Belta2008,Bhatia2011,Wongpiromsarn,Maly,Vasile}.
 In these papers, robot tasks are expressed in formal language such as Linear Temporal Logic (LTL).
 Controllers can be automatically synthesized from the task specification,
-while providing guarantees on the correctness of robot behaviors.
+while providing guarantees on the correctness of robot behaviours.
 These controller synthesis algorithms typically abstract robot systems and environment by discretizing the robot workspace,
 in order to avoid the combinatorial blow up of the state space.
 While the abstraction reduces the complexity of mobile systems,
@@ -27,8 +48,8 @@ However, little work has been done on task and motion planning for multi-agent m
 
 In this work, we are interested in developing a framework for automatically synthesizing correct-by-construction controllers
 for multi-agent manipulation tasks expressed in Linear Temporal Logic. The framework consists of three main components:
-a high-level {\it task planner} for generating and distributing controllers to each agent,
-a {\it trajectory planner} for finding feasible path and moving each manipulator while avoiding collisions,
-and and {\it action planner} for creating precise motion and actuation for each manipulator.
+a high-level \textit{task planner} for generating and distributing controllers to each agent,
+a \textit{trajectory planner} for finding feasible path and moving each manipulator while avoiding collisions,
+and and \textit{action planner} for creating precise motion and actuation for each manipulator.
 The framework will be demonstrated with an experiment of two physical Baxter robots assembling a set of modular robots. 
-
+\end{comment}
