@@ -38,6 +38,9 @@ The action server, called by the task planner when a connection need to be perfo
 The server creates an instance of Matlab when launched, which is then used for the kinematics computations and controller design.
 The kinematics computations and linear model generation are done using the Matlab Robotics Toolbox \cite{Corke11a}.
 
+Initially, the intent was to model the manipulator and controller(s) as a hybrid system, consisting of the continuous manipulator dynamics coupled with discrete controller states for aligning and approaching a connection.
+However, the hybrid system model was discarded due to the complexity of developing a controller for the attachment motions.
+
 \begin{figure}[h]
 	\includegraphics[width = 8 cm]{action_server_2.png}
 	\caption{Action Planner Module}
@@ -46,7 +49,7 @@ The kinematics computations and linear model generation are done using the Matla
 
 
 \subsection{Difficulties with Baxter Joint Torque Control}
-Initially, the controller used in the action planner server was a linear quadratic regulator (LQR) controller computed by Matlab.
+The initial controller used in the action planner server was a linear quadratic regulator (LQR) controller computed by Matlab.
 The LQR controller provided feedback joint torques while a static input was added to counteract gravitational effects ($\mathbf{G}$ torques).
 However, this controller, when implemented on the Baxter platform, resulted in erratic arm motions despite satisfactory performance in the Baxter simulator.
 The Baxter platform provides a ``zero-gravity'' mode of operation whereby the robot continually provides torques to each joint sufficient to counteract gravitational effects.
@@ -112,6 +115,10 @@ This characterization may allow for properly determining the PD stiffness and da
 
 In addition, future work should focus on the validity of the linearized manipulator model.
 Bounding the error of the linearizion will allow the reachability computation to formally verify the controller/motion.
+
+
+
+
 
 \begin{comment}
 The action planning stage of the assembly process is broken down into two parts: modeling the manipulator behavior as a hybrid system and verifying safety conditions of the end effector motions (making sure that undesirable motions do not occur).
