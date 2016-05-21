@@ -12,7 +12,7 @@ Fig.~\ref{fig:taskplan} shows the overview structure of the high-level task plan
 \end{figure}
 
 \subsection{Parse and process the configuration file}
-To specify the desired configuration of the modular robots, a user can use an existing designer VSPARC ({\color{red}cite}) to design the configuration and generate a {\it configuration file} that encodes information of the connectivity among all modules.
+To specify the desired configuration of the modular robots, a user can use an existing designer VSPARC \cite{vsparc} to design the configuration and generate a {\it configuration file} that encodes information of the connectivity among all modules.
 Fig.~\ref{fig:configfile} shows an sample {\it configuration file}.
 
 \begin{figure}[ht!]%[H]
@@ -22,14 +22,14 @@ Fig.~\ref{fig:configfile} shows an sample {\it configuration file}.
 \label{fig:configfile}
 \end{figure}
 
-The high-level planner can parse the {\it configuration file} and build a graph encodes all connections.
+The high-level planner can parse the {\it configuration file} and build a graph that encodes all connections.
 
 \subsection{Place initial module at the starting region}
 To start the assembly, an initial module needs to be selected and placed at the starting region.
 \subsubsection{Select initial module}
 Consider the scenario shown in Fig.~\ref{fig:loop}. Eight modules are placed at locations in blue.
 It is hard to place a new module at the center location in red, as it is  fully surrounded by eight modules. Therefore, we decide to assemble modules in the order such that modules located in the center of the configuration are placed before modules located at edges of the configuration.
-To achieve this guarantees, we rank all modules based on the number of connections each module has. The maximum connection a module can has is four.
+To achieve these guarantees, we rank all modules based on the number of connections each module has. The maximum connection a module can has is four.
 Therefore, all modules are separated into four ranks. The higher the rank, the more connections a module has. 
 When choosing the initial module, we will prefer the module in a higher rank. 
 If there are more than one module in a rank, we will prioritize the module with more high rank neighbors.
@@ -53,47 +53,47 @@ In this work we only consider small size configurations (under 10 modules). Ther
 \end{figure}
 
 \subsubsection{Search for starting region}
-The starting region of the task is labeled with an AprilTag with an unique ID. Using the external camera, the task planner is able to find the positions and orientation of the starting point in the robot workspace. In this work, we choose the starting region to maximize the working area of the robot.
+The starting region of the task is labeled with an AprilTag with an unique ID. Using the external camera, the task planner is able to find the position and orientation of the starting point in the robot workspace. In this work, we choose the starting region to maximize the working area of the robot.
 
 \subsubsection{Place the initial module to the starting region}
-With the initial module and the starting region identified, the high-level planer then invoke the trajectory planner to control the robot to pick up the module and place it in the starting region.
+With the initial module and the starting region identified, the high-level planer then invokes the trajectory planner to control the robot to pick up the module and place it in the starting region.
 When picking up a module, if the robot fails to grab the module, the task planner will receive the failure status from the trajectory planner and inform the user. The user can choose to retry or abort the task.
 
 \subsection{Attach new modules}
-Once the initial module in place, the task planner will continues to attach more modules as specified in the {\it configuration file} until the configuration is completed. To attach each module, the high-level planner will go through a sequence of actions as illustrated in Fig.~\ref{fig:attach}.
+Once the initial module is in place, the task planner will continue to attach more modules as specified in the {\it configuration file} until the configuration is completed. To attach each module, the high-level planner will go through a sequence of actions as illustrated in Fig.~\ref{fig:attach}.
 
 \begin{figure}[ht!]%[H]
 \centering
 {\includegraphics[width=0.95\columnwidth]{pics/attach.pdf}}
-\caption{Sequence of actions when attaching a new module to existing modules}
+\caption{Sequence of actions when attaching a new module to an anchor modules}
 \label{fig:attach}
 \end{figure}
 
-\subsubsection{Select the existing and new module}\label{sec:nextmodule}
+\subsubsection{Select the anchor module and the new module}\label{sec:nextmodule}
 As described in the previous section, we apply special preference when planning the assembly sequence, in order to avoid difficult manipulation scenario.
-Different from choosing the initial module, when choosing an existing module, we only consider those that are already connected to the initial module.
-With an existing module, the task planner chooses a new module that needs to be connected to the existing module based on the {\it configuration file}.
+Different from choosing the initial module, when choosing an anchor module, we only consider those that are already connected to the initial module.
+With an anchor module, the task planner chooses a new module that needs to be connected to the anchor module based on the {\it configuration file}.
 
-\subsubsection{Move the arm above the existing module and record its position}
-When the robot arm successfully picked up a module, the module will block the view of the camera on the arm.
-Since the trajectory planner needs to use the camera for localizing the position of the module, that task planner will first localize the existing module before picking up the new module.
-In order to localize the existing module, the high-level planner will invoke the trajectory planner to move the arm roughly above the existing module, where the camera on the robot arm can get a updated and more precious position of the existing module.
+\subsubsection{Move the arm above the anchor module and record its position}
+When the robot arm successfully picks up a module, the module will block the view of the camera on the arm.
+Since the trajectory planner needs to use the camera for localizing the position of a module, task planner will first localize the anchor module before picking up the new module.
+In order to localize the anchor module, the high-level planner will invoke the trajectory planner to move the arm roughly above the anchor module, where the camera on the robot arm can get a updated and more precise position of the anchor module.
 This position is then recorded for later reference.
 
-\subsubsection{Pick up the new module and move it next to the existing module}
-After locating the existing module, the high-level task planer then ask the trajectory planer to control the robot arm to pick up the new module.
-To prepare for attaching the new module, the new module needs to be close to the existing module.
-This is achieved by moving the arm to a position slightly shifted from the previously recorded existing module position.
+\subsubsection{Pick up the new module and move it next to the anchor module}
+After locating the anchor module, the high-level task planer then ask the trajectory planer to control the robot arm to pick up the new module.
+To prepare for attaching the new module, the new module needs to be close to the anchor module.
+This is achieved by moving the arm to a position slightly shifted from the previously recorded anchor module position.
 
-\subsubsection{Attach the new module to the existing module}
-With the new module being next to the existing module, the high-level planner then call the action planner to generate and perform a verified controller to slowly move and attach the new module to the existing module.
+\subsubsection{Attach the new module to the anchor module}
+With the new module being next to the anchor module, the high-level planner then call the action planner to generate and perform a verified controller to slowly move and attach the new module to the anchor module.
 
 \subsection{Future work: Synthesize the sequence of actions with formal method}
 Inspired by the framework introduced in \cite{HKG2009}, we would like to implement a controller synthesis algorithm in the high-level task planner to automatically generate the action sequence shown in Fig.~\ref{fig:attach} from reactive robot task specifications.
 A reactive robot task specification is expressed in LTL formulas.
 Then the specification is automatically transformed to a correct-by-construction discrete controller.
 At last, the controller can be continuously implemented to generate desired robot behaviors.
-Using formal method, the high-level task planner will be able to inform the user if there is potential failure in the specified tasks.
+Using formal methods, the high-level task planner will be able to inform the user if there is potential failure in the specified tasks.
 
 
 
