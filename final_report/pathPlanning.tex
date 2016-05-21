@@ -28,7 +28,7 @@ The motion planning action service is an action service in ROS and based on the 
 During execution, the task planner requests the path planner to create trajectory plans for one or more robot arms. The planner aims to find a plan that (i) each arm starts at its initial configuration, and (ii) each arm ends with each robot end effector within a certain distance from the final desired workspace position. 
 
 There are a variety of path planning algorithms developed in the community~\cite{DBLP:books/daglib/0016830} and some algorithms are adapted for finding robot arm trajectories. 
-Researchers have proposed sampling-based approaches with probabilistic completeness such as the Rapidly-Exploring Random Tree (RRT) algorithm~\cite{VahrenkampBAKD09} to find trajectories for robot arms. Others have used Probabilistic RoadMaps (PRM) that work with high-dimensional spaces~\cite{KavrakiSLO96} but the algorithm requires pre-computation of the roadmap and no dynamic obstacles in the environment. In this work, we do not conduct pre-processing and the other arms can temporarily be obstacles in the environment so we are using an improved version of RRT, RRT-Connect~\cite{KuffnerL00} to find trajectories for the robot arms.
+Researchers have proposed sampling-based approaches with probabilistic completeness such as the Rapidly-Exploring Random Tree (RRT) algorithm~\cite{VahrenkampBAKD09} to find trajectories for robot arms. Others have used Probabilistic RoadMaps (PRM) that work with high-dimensional spaces~\cite{KavrakiSLO96} but this algorithm requires pre-computation of the roadmap and no dynamic obstacles in the environment. In this work, we do not conduct pre-processing and the other arms can temporarily be obstacles in the environment. As a result, we are using an improved version of RRT, RRT-Connect~\cite{KuffnerL00} to find trajectories for the robot arms.
 
 
 Our work leverages the existing open-source planning software for manipulation, MoveIt! \cite{moveit} with the Open Motion Planning Library (OMPL)~\cite{sucan2012the-open-motion-planning-library} to plan trajectories for the robot arms. 
@@ -42,10 +42,10 @@ For our first attempt, we subscribe to the depth information of a Kinect facing 
 
 Since the modules are modeled as obstacles in the octamap, to approach and grasp the module, we remove the target module from the octamap through inserting a module-like scene object into the workspace (Fig.~\ref{fig:octamap_object}). The octamap automatically subtracts any scene objects and by excluding the module object from collision check during trajectory planning, MoveIt! can find a path to the module.
 
-\paragraph{Table object}\label{obstacle-table}
+\paragraph{Table Object}\label{obstacle-table}
 Since the environment of the workspace is given, the other way to model obstacles in the environment is simply adding a table object right in front of Baxter, as shown in Fig.~\ref{fig:table_only}. 
 
-We compared the performance of the two approaches for modeling obstacles. It turned out clustering of modules could be a problem when using an octamap and MoveIt! could not find a plans. On the other hand, when we simply model the environment with only a table in front, the resulting plan may sometimes touch the other modules. Looking at Fig.~\ref{fig:table}, notice that the table object is a pretty good representation of the obstacle information from the octamap. Since the modules are movable in the workspace, we determined that it will be better to get a plan most of time and we go on with approach b) to model obstacles. 
+We compared the performance of the two approaches for modeling obstacles. It turned out clustering of modules could be a problem when using an octamap and MoveIt! could not find a plan. On the other hand, when we simply model the environment with only a table in front, the resulting plan may sometimes touch the other modules. Looking at Fig.~\ref{fig:table}, notice that the table object is a pretty good representation of the obstacle information from the octamap. Since the modules are movable in the workspace, we determined that it will be better to get a plan most of time and we go on with approach b) to model obstacles. 
 
 %\quad
 %\quad
@@ -101,7 +101,7 @@ Through testing our approach, our group have noticed that the camera information
 \vspace{-12pt}
 \end{center}
 \end{wrapfigure}
-robot does not give an accurate position of the modules using AprilTags recognition~\cite{Olson11},  
+robot does not give an accurate position of the modules using AprilTags recognition,  
 as the distance from Kinect to the module increases. 
 The position of the modules from Kinect is off by about 5cm and it is not good enough for the arm and gripper to arrive at the module location and grasp the module. Fig.~\ref{fig:offTagPose} shows the differences of tag pose when using the Kinect sensor (tag\_4) and the left hand camera (left\_hand\_tag\_4).
 
@@ -128,7 +128,7 @@ Since the trajectory planning algorithm RRT is probabilistic complete, it may no
 Besides the trajectory planner may not return or execute a plan, the gripping motion and the retrieveal of module pose can also fail. All these failure information are returned to the client, as shown with the red failed arrows in Fig.~\ref{fig:plan}.
 
 \subsection{Results}
-Compared to our plan in the proposal, we have successfully conducted trajectory planning for one arm and two arms simultaneously. We were out of time and we did not get to try planning four arms together. The action service is also able to detect and report failure.
+Compared to our plan in the proposal, we have successfully conducted trajectory planning for one arm and two arms simultaneously. The action service is also able to detect and report failure. In the future, we would like to extend our system to plan for four arms together. 
 
 We have tried creating our version of RRT but modeling of the environment and checking collision between joints posed challenges. Since MoveIt! gives reliable results, our action service is using the software as the core planning interface.
 
