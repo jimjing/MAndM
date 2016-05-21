@@ -1,3 +1,10 @@
 \section{Overview}\label{overview}
+In this work, we are interested in developing a framework for controlling a Baxter robot to automatically assemble a set of modular robots to a single configuration based on the user defined {\it configuration file}.
+Moreover, we aim to provide guarantees for the behaviors of the robot to the user during the planning stage to avoid unexpected or unsafe behaviors.
+Specifically, the frameworks includes the following main components:
+\begin{itemize}
+\item A high-level planner for parsing user defined {\it configuration file} and generate and execute an assembly plan. 
+\item A trajectory planer that is capable of moving robot arms to any configuration with its workspace while avoiding collisions.
+\item An action planner for creating precised and verified motion to control the end effector of each arm.
+\end{itemize}
 
-% system diagram
