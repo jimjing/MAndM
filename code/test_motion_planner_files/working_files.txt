@@ -1,0 +1,33 @@
+Working py files:
+----------------------
+====
+traj
+====
+trajHelper.py
+trajectory_main.py
+
+===
+IK
+===
+InverseKinematicsHandler.py
+test_moveit.py
+test_IK_old.py
+
+===
+TF
+===
+test_tf_broadcaster.py
+test_tf_listener.py
+test_tf_transform.py
+
+
+==============
+TF with moveit
+==============
+test_moveit_with_tf.py
+
+=======
+action
+=======
+test_action.py
+test_action_client.py

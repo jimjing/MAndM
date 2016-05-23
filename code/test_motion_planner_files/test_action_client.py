@@ -26,9 +26,7 @@ if __name__ == '__main__':
 
         goal = PlanAndExecuteTrajGoal()
         goal.tag_name = 'tag_4'
-        #goal.action_type = 'move_to'
-        goal.action_type = 'open_gripper'
-
+        goal.action_type = 'pickup'
         goal.planning_mode = 'rough_and_fine'
         goal.arm = args.arm
         goal.rotate_ninety = True
@@ -43,9 +41,7 @@ if __name__ == '__main__':
 
         error_dict = {1:'-no tag_name and target_pose provided.',2:'cannot locate tag in rough mode',\
                      3:'cannot locate tag in fine mode',4:'no rough plan found',\
-                     5:'no fine plan found', 6: 'action type invalid',\
-                     7:'arm type invalid', 8: "invalid arm for move to target pose",\
-                     10: 'no tag name provided for get_tag_pose', 99:'Unexpected error!'}
+                     5:'no fine plan found',99:'Unexpected error!'}
         if result.error_type:
             print "ERROR:" + error_dict[result.error_type]
 

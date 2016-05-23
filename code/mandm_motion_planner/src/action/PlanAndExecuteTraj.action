@@ -2,7 +2,7 @@
 string tag_name                 # Specify which tag we are planning to
 geometry_msgs/Pose target_pose  # (Optional) Specify target pose to go to
 string arm                      # 'left_arm', 'right_arm' or 'both_arms'
-string action_type              # ‘move_to’, ‘open_gripper’, 'close_gripper' or 'move_to_camera_pos'
+string action_type              # ‘move_to’, ‘open_gripper’, 'close_gripper', 'get_tag_pose' or 'move_to_camera_pos'
 string planning_mode            # 'rough', 'fine' or 'rough_and_fine'
 bool rotate_ninety              # rotate axis 90 degrees if true
 

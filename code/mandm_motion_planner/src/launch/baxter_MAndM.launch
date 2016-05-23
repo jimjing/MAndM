@@ -13,7 +13,6 @@
 
   <!-- launch the default launch file to set up movit and rviz, with rviz_config modified -->
   <arg name="rviz_config" default="$(find mandm_motion_planner)/src/rviz_configs/mandm_default.rviz"/>
-
   <!-- for setting up kinect from torso -->
   <!-- octamap simply comes from Jim's kinect -->
   <!-- <arg name="camera_link_pose" default="0.15 0.075 0.5 0.0 0.7854 0.0"/> -->
@@ -26,10 +25,10 @@
   </include>
 
   <!-- octomap parameters for moveit -->
-  <!-- <group ns="move_group" > -->
-  <!-- <param name="octomap_frame" type="string" value="camera_link" /> -->
-  <!-- <param name="octomap_resolution" type="double" value="0.02" /> -->
-   <rosparam command="load" file="$(find baxter_moveit_config)/config/kinect_sensor.yaml" />
-  <!--</group> -->
+  <group ns="move_group" >
+    <param name="octomap_frame" type="string" value="camera_link" />
+    <param name="octomap_resolution" type="double" value="0.01" />
+    <rosparam command="load" file="$(find baxter_moveit_config)/config/kinect_sensor.yaml" />
+  </group>
 
 </launch>
